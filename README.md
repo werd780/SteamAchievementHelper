@@ -22,4 +22,4 @@
 - CTkTable (https://github.com/Akascape/CTkTable)
 - HowLongToBeat Python API (https://pypi.org/project/howlongtobeatpy/)
 
-### Hopefully you found some use from this, and if you want to donate you can find me at cash.app/$werd780 
+### Hopefully you found some use from this (I know it's not pretty code), and if you want to donate you can find me at cash.app/$werd780 
