@@ -1,7 +1,6 @@
 import pickle
-from resourcePathFix import resource_path
 
-FILENAME = 'C:\\ProgramData\\AchievementHelper\\resources\\GUI_Settings.pk'
+FILENAME = 'C:\\ProgramData\\AchievementHelper\\GUI_Settings.pk'
 
 def getGUISettings():
     with open(FILENAME,'rb') as fi:

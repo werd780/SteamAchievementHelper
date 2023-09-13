@@ -1,10 +1,9 @@
 import pickle
-from resourcePathFix import resource_path
 
 steamAPIURL =  "http://api.steampowered.com/"
 formatType = "format=json"
 
-FILENAME = 'C:\\ProgramData\\AchievementHelper\\resources\\API_Key.pk'
+FILENAME = 'C:\\ProgramData\\AchievementHelper\\API_Key.pk'
 
 def getAPI_Key():
     with open(FILENAME,'rb') as fi:

@@ -9,21 +9,21 @@ import getAchievementData
 import GUISettings
 import controls
 import testAPI
+import logFile
 import csv
 import ctypes
-import shutil
+import time
 from tkinter import filedialog
 from howlongtobeatpy import HowLongToBeat
 from CTkTable import *
 from PIL import Image
-from resourcePathFix import resource_path
 
 
 customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue", "green", "dark-blue (standard)"
 
 PROFILE_PIC_WIDTH = 100
 PROFILE_PIC_HEIGHT = 100
-PROFILE_PIC_PATH = resource_path("resources\\question-mark.jpg")
+PROFILE_PIC_PATH = ""
 MASTERGAMEDICTIONARY = []
 SORT_ORDER_MAIN = "Ascending"
 SORT_ORDER_ACH = "Ascending"
@@ -35,6 +35,10 @@ class GUI(customtkinter.CTk):
         super().__init__()
 
         createProgramFolder()
+        logFile.checkLogFile()
+        
+        global PROFILE_PIC_PATH
+        PROFILE_PIC_PATH = "C:\\ProgramData\\AchievementHelper\\profile_pic.jpg"
 
         #settings list [window width, window height, appearance mode, UI Scaling, Steam ID, API Key]
         settings = GUISettings.getGUISettings()
@@ -204,7 +208,7 @@ class GUI(customtkinter.CTk):
         self.update_profile_picture(returnValues[1])
         self.update_profile_name(returnValues[2])
 
-        gameReturnValues = getOwnedGameData.ownedGameData(userID)
+        gameReturnValues = getOwnedGameData.ownedGameData(userID,0)
         if gameReturnValues[0] == False:
             self.update_profile_name("ERROR PULLING GAMES")
             return
@@ -237,7 +241,7 @@ class GUI(customtkinter.CTk):
             MASTERGAMEDICTIONARY[indexCounter]["playtime_forever"] = round(MASTERGAMEDICTIONARY[indexCounter]["playtime_forever"] / 60, 2)
 
             #returns [BOOL, Count of Achieves Total, Count of achieves Unlocked, List [Achievement Details]]
-            achievementReturnValues = getAchievementData.playerAchievementData(userID, str(game['appid']))
+            achievementReturnValues = getAchievementData.playerAchievementData(userID, str(game['appid']), 0)
 
             #Adding achievement data to Game dictionary
             MASTERGAMEDICTIONARY[indexCounter]["total_achieves"] = achievementReturnValues[1]
@@ -255,8 +259,10 @@ class GUI(customtkinter.CTk):
             try:
                 results = HowLongToBeat().search(game["name"])
             except Exception as e:
-                self.countPopup.config(text=f"{e}")
+                self.countPopup.config(text=f"Error: {e}")
                 self.popup.update()
+                logFile.writeToLog(f"Error in getting How Long to Beat data for {game['name']}: {e}")
+                time.sleep(2)
 
             if results is not None and len(results) > 0:
                 best_element = max(results, key=lambda element: element.similarity)
@@ -512,10 +518,19 @@ class GUI(customtkinter.CTk):
         self.popup.pack_slaves()
 
 def createProgramFolder():
-    directoryCheck = "C:\\ProgramData\\AchievementHelper\\resources"
-    resourceDir = resource_path("resources")
+    directoryCheck = "C:\\ProgramData\\AchievementHelper"
     if not os.path.isdir(directoryCheck):
-        shutil.copytree(resourceDir,directoryCheck)
+       os.mkdir(directoryCheck)
+    if not os.path.isfile(directoryCheck + "\\API_Key.pk"):
+        open(directoryCheck + "\\API_Key.pk","w").close()
+        controls.setAPI_Key("Enter your Steam API")
+    if not os.path.isfile(directoryCheck + "\\GUI_Settings.pk"):
+        open(directoryCheck + "\\GUI_Settings.pk","w").close()
+        GUISettings.revertGUISettings()
+    if not os.path.isfile(directoryCheck + "\\log_file.txt"):
+        open(directoryCheck + "\\log_file.txt","w").close()
+    img = Image.new('RGB', (64,64))
+    img.save(directoryCheck + "\\profile_pic.jpg")
     
 def on_closing():
     if RESET_FLAG == True:
