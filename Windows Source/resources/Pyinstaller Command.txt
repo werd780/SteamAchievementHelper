@@ -1,0 +1,1 @@
+pyinstaller --name AchievementHelper --onefile --windowed --icon=icon.ico --add-binary ".venv/Lib/site-packages/fake_useragent/data;fake_useragent/data" GUI.py
