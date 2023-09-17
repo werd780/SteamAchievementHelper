@@ -473,16 +473,19 @@ class GUI(customtkinter.CTk):
         self.main_table.configure(column=8,row=1,values=main_value)
 
     def export(self, table: str):
-        saveLocation = self.getSaveFolder()
+        try:
+            saveLocation = self.getSaveFolder()
 
-        if table == "Main":
-            valuesToAdd = self.main_table.get()
-        else:
-            valuesToAdd = self.achieve_table.get()
+            if table == "Main":
+                valuesToAdd = self.main_table.get()
+            else:
+                valuesToAdd = self.achieve_table.get()
 
-        with open(saveLocation, "w", newline='') as csv_file:
-            writer=csv.writer(csv_file)
-            writer.writerows(valuesToAdd)
+            with open(saveLocation, "w", newline='') as csv_file:
+                writer=csv.writer(csv_file)
+                writer.writerows(valuesToAdd)
+        except Exception as e:
+            logFile.writeToLog(f"Error in export on table: {table}: {e}")
     
     def getSaveFolder(self):
         defaultFileName = self.achieve_table_frame._label_text + ".csv"
